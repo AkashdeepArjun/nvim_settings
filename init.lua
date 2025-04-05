@@ -47,7 +47,8 @@ require('lazy').setup({
   require 'plugins.nvim-planery',
   require 'plugins.spectre',
   require 'plugins.ccc',
-  require 'plugins.image_preview',
+  require 'plugins.image',
+  require 'plugins.grapple',
 }, {
 
   ui = {
