@@ -49,6 +49,7 @@ require('lazy').setup({
   require 'plugins.ccc',
   require 'plugins.image',
   require 'plugins.grapple',
+  require 'plugins.luasnip',
 }, {
 
   ui = {
