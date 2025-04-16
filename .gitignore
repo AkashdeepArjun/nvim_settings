@@ -3,6 +3,6 @@
 *.svg
 *.jpeg
 *.php
-# *.html
+*.html
 .git
 .gitignore
