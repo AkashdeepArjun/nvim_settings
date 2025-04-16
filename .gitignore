@@ -1,2 +1,6 @@
 *.log
+*.png
+*.svg
+*.jpeg
+*.php
 .git/
