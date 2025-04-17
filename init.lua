@@ -50,6 +50,7 @@ require('lazy').setup({
   require 'plugins.image',
   require 'plugins.grapple',
   require 'plugins.luasnip',
+  require 'plugins.mini_surround',
 }, {
 
   ui = {
