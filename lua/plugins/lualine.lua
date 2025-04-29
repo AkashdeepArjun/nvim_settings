@@ -16,6 +16,10 @@ return {
       gray1 = '#828997',
       gray2 = '#2c323c',
       gray3 = '#3e4452',
+      zello = '#faf537 ',
+      mode_fg = '#c880ff',
+      visual_bg = '#dc5f00 ',
+      visual_fg = '#ffff',
     }
 
     local onedark_theme = {
@@ -24,11 +28,11 @@ return {
         b = { fg = colors.fg, bg = colors.gray3 },
         c = { fg = colors.fg, bg = colors.gray2 },
       },
-      command = { a = { fg = colors.bg, bg = colors.yellow, gui = 'bold' } },
-      insert = { a = { fg = colors.bg, bg = colors.blue, gui = 'bold' } },
-      visual = { a = { fg = colors.bg, bg = colors.purple, gui = 'bold' } },
-      terminal = { a = { fg = colors.bg, bg = colors.cyan, gui = 'bold' } },
-      replace = { a = { fg = colors.bg, bg = colors.red1, gui = 'bold' } },
+      command = { a = { fg = colors.bg, bg = colors.green, gui = 'bold' } },
+      insert = { a = { fg = colors.mode_fg, bg = colors.zello, gui = 'bold' } },
+      visual = { a = { fg = colors.visual_fg, bg = colors.visual_bg, gui = 'bold' } },
+      terminal = { a = { fg = colors.mode_fg, bg = colors.cyan, gui = 'bold' } },
+      replace = { a = { fg = colors.mode_fg, bg = colors.red1, gui = 'bold' } },
       inactive = {
         a = { fg = colors.gray1, bg = colors.bg, gui = 'bold' },
         b = { fg = colors.gray1, bg = colors.bg },
@@ -37,26 +41,27 @@ return {
     }
 
     -- Import color theme based on environment variable NVIM_THEME
-    local env_var_nvim_theme = os.getenv 'NVIM_THEME' or 'nord'
+    local env_var_nvim_theme = os.getenv 'NVIM_THEME' or 'onelight'
 
     -- Define a table of themes
     local themes = {
       onedark = onedark_theme,
       nord = 'nord',
+      another = 'gruvbox',
     }
 
     local mode = {
       'mode',
       fmt = function(str)
-        -- return ' ' .. str:sub(1, 1) -- displays only the first character of the mode
-        return ' ' .. str
+        return ' ' .. str:sub(1, 1) -- displays only the first character of the mode
+        -- return ' ' .. str
       end,
     }
 
     local filename = {
       'filename',
       file_status = true, -- displays file status (readonly status, modified status)
-      path = 0,           -- 0 = just filename, 1 = relative path, 2 = absolute path
+      path = 0, -- 0 = just filename, 1 = relative path, 2 = absolute path
     }
 
     local hide_in_width = function()
@@ -68,7 +73,7 @@ return {
       sources = { 'nvim_diagnostic' },
       sections = { 'error', 'warn' },
       symbols = { error = ' ', warn = ' ', info = ' ', hint = ' ' },
-      colored = false,
+      colored = true,
       update_in_insert = false,
       always_visible = false,
       cond = hide_in_width,
@@ -76,7 +81,7 @@ return {
 
     local diff = {
       'diff',
-      colored = false,
+      colored = true,
       symbols = { added = ' ', modified = ' ', removed = ' ' }, -- changes diff symbols
       cond = hide_in_width,
     }
@@ -84,7 +89,8 @@ return {
     require('lualine').setup {
       options = {
         icons_enabled = true,
-        theme = themes[env_var_nvim_theme], -- Set theme based on environment variable
+        theme = themes[onedark_theme],
+        -- theme = themes[env_var_nvim_theme], -- Set theme based on environment variable
         -- Some useful glyphs:
         -- https://www.nerdfonts.com/cheat-sheet
         --        

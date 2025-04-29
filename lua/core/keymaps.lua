@@ -54,6 +54,9 @@ vim.keymap.set('n', '<leader>ul', ':Mason<CR>', opts)
 
 vim.keymap.set('n', '<leader>lw', '<cmd>set wrap!<CR>', opts)
 
+vim.keymap.set('n', '<leader>ma', '<cmd>set ma<CR>', opts)
+vim.keymap.set('n', '<leader>nm', '<cmd>set noma<CR>', opts)
+
 vim.keymap.set('v', '<', '<gv', opts)
 vim.keymap.set('v', '>', '>gv', opts)
 vim.keymap.set('v', 'p', '"_dP', opts)
@@ -87,3 +90,16 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- Save and load session
 vim.keymap.set('n', '<leader>ss', ':mksession! .session.vim<CR>', { noremap = true, silent = false })
 vim.keymap.set('n', '<leader>sl', ':source .session.vim<CR>', { noremap = true, silent = false })
+
+--Luasnip settings
+vim.keymap.set({ 'i', 's' }, '<C-j>', "<cmd>lua require'luasnip'.jump(1)<CR>", opts)
+vim.keymap.set({ 'i', 's' }, '<C-k>', "<cmd>lua require'luasnip'.jump(-1)<CR>", opts)
+-- set keybinds for both INSERT and VISUAL.
+--
+vim.keymap.set({ 'i', 's' }, '<A-n>', "<cmd>lua require'luasnip'.change_choice(1)<CR>", opts)
+
+vim.keymap.set({ 'i', 's' }, '<A-p>', "<cmd>lua require'luasnip'.change_choice(-1)<CR>", opts)
+
+vim.keymap.set({ 'i', 's' }, '<A-m>', "<cmd>lua require 'luasnip'.invalidate('e9')<CR>", opts)
+
+vim.keymap.set({ 'i', 's' }, '<A-r>', "<cmd>lua require 'luasnip'.refresh_notify('html')<CR>", opts)
