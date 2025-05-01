@@ -22,6 +22,7 @@ local fmta = require('luasnip.extras.fmt').fmta
 local types = require 'luasnip.util.types'
 local conds = require 'luasnip.extras.conditions'
 local conds_expand = require 'luasnip.extras.conditions.expand'
+local k = require('luasnip.nodes.key_indexer').new_key
 
 local function copy(args)
   return args[1]
