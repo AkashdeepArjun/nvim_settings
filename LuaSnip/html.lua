@@ -282,7 +282,7 @@ print_r($<ref>);
   --   end, {})
   -- ),
 
-  s({ regTrig = true, wordTrig = false, trig = '(%w+)%.(%a+)%*(%d)' }, {
+  s({ regTrig = true, wordTrig = false, trig = '(%w+)%.(%a*)%*(%d)' }, {
     d(1, function(_, snip)
       local tag = snip.captures[1]
       local class_name = snip.captures[2]
@@ -299,30 +299,6 @@ print_r($<ref>);
 
       ]],
           { tag_start = t(tag), content = i(id, 'TODO'), tag_end = t(tag), cname = t(class_name) },
-          { delimiters = '{}', indent_string = [[\t]] }
-        )
-        vim.list_extend(nodes, new_node)
-      end
-
-      return sn(nil, nodes)
-    end),
-  }),
-  s({ regTrig = true, wordTrig = false, trig = '(%w+)%*(%d)' }, {
-    d(1, function(_, snip)
-      local tag = snip.captures[1]
-      local amount = snip.captures[2]
-      local nodes = {}
-      for id = 1, amount do
-        local new_node = fmt(
-          [[
-
-      <{tag_start} >
-      {content}
-      </{tag_end}>
-
-
-      ]],
-          { tag_start = t(tag), content = i(id, 'TODO'), tag_end = t(tag) },
           { delimiters = '{}', indent_string = [[\t]] }
         )
         vim.list_extend(nodes, new_node)
