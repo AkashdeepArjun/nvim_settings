@@ -20,6 +20,13 @@ local types = require 'luasnip.util.types'
 local conds = require 'luasnip.extras.conditions'
 local conds_expand = require 'luasnip.extras.conditions.expand'
 local k = require('luasnip.nodes.key_indexer').new_key
+local events = require 'luasnip.util.events'
+local function reindent_callback()
+  vim.schedule(function()
+    vim.cmd 'normal! =='
+  end)
+end
+-- ls.log.open()
 ls.add_snippets('html', {
   s('jscr', {
 
@@ -34,15 +41,36 @@ ls.add_snippets('html', {
     'php',
     fmt(
       [[
-  <?php
+<?php
 
-      {}
+{}
+?>
 
-  ?>
   ]],
-      { i(1, 'php stuff here') },
-      { delimiters = '{}', indent_string = [[\t]] }
-    )
+      { i(1, '//TODO') },
+      {
+        delimiters = '{}',
+        indent_string = [[\t]],
+      }
+    ),
+    {
+      --   callbacks = {
+      --     [-1] = {
+      --       [events.enter] = function()
+      --         vim.defer_fn(function()
+      --           vim.bo.indentexpr = ''
+      --           vim.bo.smartindent = false
+      --           vim.bo.autoindent = false
+      --           vim.bo.copyindent = true
+      --           vim.opt_local.formatoptions:remove { 't', 'q' }
+      --         end, 0)
+      --       end,
+      --     },
+      --   },
+      -- [5] = {
+      --   [1] = reindent_callback,
+      -- },
+    }
   ),
   s('ec', {
     i(1, 'echo '),
@@ -226,7 +254,7 @@ ls.add_snippets('html', {
 print_r($<ref>);
 
 ]],
-      { ref = i(1, 'array_ref') },
+      { ref = i(1, 'array_var') },
       { delimiters = '<>', indent_string = [[\t]] }
     )
   ),
@@ -237,19 +265,46 @@ print_r($<ref>);
   }),
 
   postfix('brc', {
+
     f(function()
       return '{' .. parent.snippet.env.POSTFIX_MATCH .. '}'
     end, {}),
   }),
-  s({ regTrig = true, wordTrig = false, trig = '(div*)(%d)' }, {
+  -- s(
+  --   { regTrig = true, wordTrig = false, trig = 'div%.(%a+)%*(%d)' },
+  --   d(1, function(args, snip)
+  --     local nodes = {}
+  --     for id = 1, snip.captures[2] do
+  --       nodes[id] = sn(id, { t "<div class='", i(1), t { snip.captures[1] .. "'>", '' }, i(2), t { '', '', '</div>', '' } })
+  --     end
+  --     nodes[snip.captures[2] + 1] = i(0)
+  --     return sn(nil, nodes)
+  --   end, {})
+  -- ),
 
-    d(1, function(args, snip)
+  s({ regTrig = true, wordTrig = false, trig = '(%w+)%.(%a*)%*(%d)' }, {
+    d(1, function(_, snip)
+      local tag = snip.captures[1]
+      local class_name = snip.captures[2]
+      local amount = snip.captures[3]
       local nodes = {}
-      for index = 1, snip.captures[2] do
-        nodes[index] = t { '<div> ', '', '', '</div>', 'pre-access' }
+      for id = 1, amount do
+        local new_node = fmt(
+          [[
+
+      <{tag_start} class='{cname}'>
+      {content}
+      </{tag_end}>
+
+
+      ]],
+          { tag_start = t(tag), content = i(id, 'TODO'), tag_end = t(tag), cname = t(class_name) },
+          { delimiters = '{}', indent_string = [[\t]] }
+        )
+        vim.list_extend(nodes, new_node)
       end
 
       return sn(nil, nodes)
-    end, {}),
+    end),
   }),
 }, { key = 'html' })

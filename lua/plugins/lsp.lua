@@ -102,6 +102,20 @@ return { -- LSP Configuration & Plugins
       end,
     })
 
+local nvim_lsp = require('lspconfig')
+nvim_lsp.html.setup({
+  capabilities = capabilities,  -- Add your capabilities setup if necessary
+  init_options = {
+    provideFormatter = false,  -- Disable LSP formatting for HTML files
+  },
+  on_attach = function(client, bufnr)
+    -- Disable LSP formatting specifically for HTML files
+    if vim.bo.filetype == 'html' then
+      client.server_capabilities.documentFormattingProvider = false
+    end
+  end,
+})
+
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
@@ -252,4 +266,13 @@ return { -- LSP Configuration & Plugins
       },
     }
   end,
+
+
+-- lua/plugins/lsp.lua
+
+
+
+
+
+
 }

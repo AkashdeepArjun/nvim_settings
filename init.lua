@@ -19,7 +19,7 @@ local themes = {
   nord = 'plugins.themes.nord',
   onedark = 'plugins.themes.onedark',
 }
-
+--require 'custom.php_toggle'
 require('lazy').setup({
   -- require(themes[env_var_nvim_theme]),
   -- require 'plugins.colortheme',
@@ -51,6 +51,7 @@ require('lazy').setup({
   require 'plugins.grapple',
   require 'plugins.luasnip',
   require 'plugins.mini_surround',
+  require 'plugins.treesitter',
 }, {
 
   ui = {
@@ -73,3 +74,76 @@ require('lazy').setup({
     },
   },
 })
+
+-- 🔽 PLACE YOUR AUTOCMD HERE
+-- vim.api.nvim_create_autocmd('CursorMovedI', {
+--   pattern = '*.html',
+--   callback = function()
+--     local line = vim.api.nvim_get_current_line()
+--     local cursor_col = vim.fn.col '.'
+--     local before_cursor = line:sub(1, cursor_col)
+--
+--     if before_cursor:match '<%?php.*' then
+--       vim.bo.smartindent = false
+--       vim.bo.autoindent = false
+--     else
+--       vim.bo.smartindent = true
+--       vim.bo.autoindent = true
+--     end
+--   end,
+-- })
+--
+--
+--
+--
+-- vim.api.nvim_create_autocmd('CursorMovedI', {
+--   pattern = '*.html',
+--   callback = function()
+--     local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+--     local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1] or ''
+--     local before_cursor = line:sub(1, col)
+--
+--     if before_cursor:match '<%?php' then
+--       vim.bo.autoindent = false
+--       vim.bo.smartindent = false
+--       vim.cmd "echo 'PHP: autoindent OFF'"
+--     else
+--       vim.bo.autoindent = true
+--       vim.bo.smartindent = true
+--       vim.cmd "echo 'HTML: autoindent ON'"
+--     end
+--   end,
+-- })
+--
+--
+--
+--
+vim.api.nvim_create_autocmd({ 'InsertEnter', 'CursorMovedI' }, {
+  pattern = '*.html',
+  callback = function()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local in_php_block = false
+
+    for i = 1, row do
+      local line = lines[i]
+      if line:match '<%?php' then
+        in_php_block = true
+      elseif line:match '?>' then
+        in_php_block = false
+      end
+    end
+
+    if in_php_block then
+      vim.bo.autoindent = false
+      vim.bo.smartindent = false
+      vim.cmd "echo 'Inside PHP: autoindent OFF'"
+    else
+      vim.bo.autoindent = true
+      vim.bo.smartindent = true
+      vim.cmd "echo 'Outside PHP: autoindent ON'"
+    end
+  end,
+})
+
+require 'custom.php_toggle' -- 🟢 Your custom logic goes here (AFTER plugins)
