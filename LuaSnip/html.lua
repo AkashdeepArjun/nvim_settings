@@ -8,6 +8,7 @@ local f = ls.function_node
 local c = ls.choice_node
 local d = ls.dynamic_node
 local r = ls.restore_node
+local indent = require('luasnip.extras').indent
 local l = require('luasnip.extras').lambda
 local rep = require('luasnip.extras').rep
 local p = require('luasnip.extras').partial
@@ -42,7 +43,6 @@ ls.add_snippets('html', {
     fmt(
       [[
 <?php
-
 {}
 ?>
 
@@ -50,7 +50,7 @@ ls.add_snippets('html', {
       { i(1, '//TODO') },
       {
         delimiters = '{}',
-        indent_string = [[\t]],
+        indent_string = [[  ]],
       }
     ),
     {
@@ -299,7 +299,7 @@ print_r($<ref>);
 
       ]],
           { tag_start = t(tag), content = i(id, 'TODO'), tag_end = t(tag), cname = t(class_name) },
-          { delimiters = '{}', indent_string = [[\t]] }
+          { delimiters = '{}', indent_string = [[	]] }
         )
         vim.list_extend(nodes, new_node)
       end
@@ -307,4 +307,45 @@ print_r($<ref>);
       return sn(nil, nodes)
     end),
   }),
+  s(
+    'fe',
+    fmt(
+      [[
+
+foreach (${} as ${key} =>${value} ){{
+
+{content}
+
+}}
+
+  ]],
+      { i(1, 'array_ref'), key = i(2, 'index'), value = i(3, 'value'), content = i(4, '//TODO') },
+      { delimiters = '{}', indent_string = [[	]] }
+    )
+  ),
+  s('emp_arry', fmt([[${ref} = array({elements});]], { ref = i(1, 'araay_name'), elements = i(2) }, { delimiters = '{}', indent_string = [[	]] })),
+  s(
+    'debug_mode',
+    fmt(
+      [[
+  error_reporting({type});
+  ini_set('display_errors',{setting_display_error});
+  ini_set('html_errors',{setting_html_errors});
+  ]],
+      { type = i(1, 'E_ALL'), setting_display_error = i(2, 'true'), setting_html_errors = i(3, 'true') },
+      { delimiters = '{}', indent_string = [[	]] }
+    )
+  ),
+
+  s('eol', { t { 'PHP_EOL;', '' } }),
+  s(
+    'nlb',
+    fmt(
+      [[
+  nl2br({text});
+  ]],
+      { text = i(1, 'reference') },
+      { delimiters = '{}', indent_string = [[	]] }
+    )
+  ),
 }, { key = 'html' })

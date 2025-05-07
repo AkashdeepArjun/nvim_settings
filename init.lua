@@ -52,6 +52,8 @@ require('lazy').setup({
   require 'plugins.luasnip',
   require 'plugins.mini_surround',
   require 'plugins.treesitter',
+  require 'plugins.novice',
+  require 'plugins.notify',
 }, {
 
   ui = {
@@ -118,32 +120,45 @@ require('lazy').setup({
 --
 --
 --
-vim.api.nvim_create_autocmd({ 'InsertEnter', 'CursorMovedI' }, {
-  pattern = '*.html',
-  callback = function()
-    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    local in_php_block = false
+-- vim.api.nvim_create_autocmd({ 'InsertEnter', 'CursorMovedI' }, {
+--   pattern = '*.html',
+--   callback = function()
+--     local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+--     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+--     local in_php_block = false
+--
+--     for i = 1, row do
+--       local line = lines[i]
+--       if line:match '<%?php' then
+--         in_php_block = true
+--       elseif line:match '?>' then
+--         in_php_block = false
+--       end
+--     end
+--
+--     if in_php_block then
+--       vim.bo.autoindent = false
+--       vim.bo.smartindent = false
+--       vim.cmd "echo 'Inside PHP: autoindent OFF'"
+--     else
+--       vim.bo.autoindent = true
+--       vim.bo.smartindent = true
+--       vim.cmd "echo 'Outside PHP: autoindent ON'"
+--     end
+--   end,
+-- })
 
-    for i = 1, row do
-      local line = lines[i]
-      if line:match '<%?php' then
-        in_php_block = true
-      elseif line:match '?>' then
-        in_php_block = false
-      end
+vim.keymap.set('n', '<leader>rr', function()
+  -- Clear Lua module cache
+  for name, _ in pairs(package.loaded) do
+    if name:match '^custom' or name:match '^plugins' then
+      package.loaded[name] = nil
     end
+  end
 
-    if in_php_block then
-      vim.bo.autoindent = false
-      vim.bo.smartindent = false
-      vim.cmd "echo 'Inside PHP: autoindent OFF'"
-    else
-      vim.bo.autoindent = true
-      vim.bo.smartindent = true
-      vim.cmd "echo 'Outside PHP: autoindent ON'"
-    end
-  end,
-})
+  -- Reload init.lua
+  dofile(vim.env.MYVIMRC)
+  vim.notify('✅ Neovim config reloaded', vim.log.levels.INFO)
+end, { desc = 'Reload Neovim config' })
 
 require 'custom.php_toggle' -- 🟢 Your custom logic goes here (AFTER plugins)

@@ -17,6 +17,16 @@ return {
         },
       }
 
+      require('luasnip').config.set_config {
+        history = true,
+        updateevents = 'TextChanged,TextChangedI',
+        enable_autosnippets = true,
+        -- This is the key part:
+        indent = {
+          char = '	', -- or "    " if you're using spaces
+        },
+      }
+
       -- vim.api.nvim_create_autocmd('User', {
       --   pattern = 'LuasnipInsertNodeLeave',
       --   callback = function()
