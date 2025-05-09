@@ -43,14 +43,14 @@ ls.add_snippets('html', {
     fmt(
       [[
 <?php
-{}
+  {}
 ?>
-
-  ]],
-      { i(1, '//TODO') },
+{}
+]],
+      { i(1, '//TODO'), i(0) },
       {
         delimiters = '{}',
-        indent_string = [[  ]],
+        -- indent_string = [[  ]],
       }
     ),
     {
@@ -307,23 +307,9 @@ print_r($<ref>);
       return sn(nil, nodes)
     end),
   }),
-  s(
-    'fe',
-    fmt(
-      [[
-
-foreach (${} as ${key} =>${value} ){{
-
-{content}
-
-}}
-
-  ]],
-      { i(1, 'array_ref'), key = i(2, 'index'), value = i(3, 'value'), content = i(4, '//TODO') },
-      { delimiters = '{}', indent_string = [[	]] }
-    )
-  ),
-  s('emp_arry', fmt([[${ref} = array({elements});]], { ref = i(1, 'araay_name'), elements = i(2) }, { delimiters = '{}', indent_string = [[	]] })),
+  s('emp_arry',
+    fmt([[${ref} = array({elements});]], { ref = i(1, 'araay_name'), elements = i(2) },
+      { delimiters = '{}', indent_string = [[	]] })),
   s(
     'debug_mode',
     fmt(
@@ -346,6 +332,23 @@ foreach (${} as ${key} =>${value} ){{
   ]],
       { text = i(1, 'reference') },
       { delimiters = '{}', indent_string = [[	]] }
+    )
+  ),
+  s(
+    'fe',
+    fmt(
+      [[
+  foreach({} as {}){{
+
+      {}
+
+  }}
+
+  {}
+
+  ]],
+      { i(1, '$collection'), i(2, '$element'), i(3, '//todo'), i(0) },
+      {}
     )
   ),
 }, { key = 'html' })

@@ -1,8 +1,8 @@
-*.log
-*.png
-*.svg
-*.jpeg
-*.php
-*.html
+# *.log
+# *.png
+# *.svg
+# *.jpeg
+# *.php
+# *.html
 .git
 .gitignore
