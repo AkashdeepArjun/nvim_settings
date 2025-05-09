@@ -201,71 +201,6 @@ return {
           ['<'] = 'prev_source',
           ['>'] = 'next_source',
           ['i'] = 'show_file_details',
-          ['I'] = function(state)
-            local node = state.tree:get_node()
-            if node and node.type == 'file' then
-              local ext = node.name:match '^.+(%..+)$'
-              if ext and ext:lower():match '%.(png|jpe?g|svg)$' then
-                local info = require('custom.image_info').get_image_info(node.path)
-                vim.notify(info or 'No image metadata found', vim.log.levels.INFO)
-                return
-              end
-            end
-            require('neo-tree.ui.renderer').show_file_details(state)
-          end,
-
-          -- ['i'] = function(state)
-          --   local node = state.tree:get_node()
-          --   if node then
-          --     local image_info_str = image_info.image_info_component(node)
-          --     if image_info_str then
-          --       -- Show image resolution info in the info panel
-          --       vim.api.nvim_out_write(image_info_str.text .. '\n')
-          --     else
-          --       -- Fallback to the default behavior if no image info
-          --       require('neo-tree.ui.renderer').render_file_details(node)
-          --     end
-          --   end
-          -- end,
-          --
-
-          -- ['i'] = function(state)
-          --   local node = state.tree:get_node()
-          --   if node then
-          --     -- Fetch the image info component from the image_info module
-          --     local image_info_str = image_info.image_info_component(node)
-          --
-          --     -- Check if image_info_str is a table and contains a 'text' field
-          --     if image_info_str and image_info_str[1] and image_info_str[1].text then
-          --       -- Output the image info text if available
-          --       vim.api.nvim_out_write(image_info_str[1].text .. '\n')
-          --     else
-          --       -- Fallback to default behavior if no image info is available
-          --       require('neo-tree.ui.renderer').render_file_details(node)
-          --     end
-          --   end
-          -- end,
-
-          -- ['i'] = function(state)
-          --   local node = state.tree:get_node()
-          --   if node then
-          --     -- Fetch the image info component from the image_info module
-          --     local image_info_str = image_info.image_info_component(node)
-          --
-          --     -- Check if image_info_str is a valid table and has the 'text' field
-          --     if image_info_str and image_info_str[1] and image_info_str[1].text then
-          --       -- Output the image info text if available
-          --       vim.api.nvim_out_write(image_info_str[1].text .. '\n')
-          --     else
-          --       -- Fallback to the default behavior if no image info is available
-          --       -- Only call render_file_details if image_info_str is nil or empty
-          --       if node then
-          --         require('neo-tree.ui.renderer').render_file_details(node)
-          --       end
-          --     end
-          --   end
-          -- end,
-
           -- ["i"] = {
           --   "show_file_details",
           --   -- format strings of the timestamps shown for date created and last modified (see `:h os.date()`)
@@ -295,9 +230,9 @@ return {
         },
 
         filtered_items = {
-          visible = true,     -- when true, they will just be displayed differently than normal items hide_dotfiles = false,
-          hide_gitignored = true,
-          hide_hidden = true, -- only works on Windows for hidden files/directories
+          visible = true,      -- when true, they will just be displayed differently than normal items hide_dotfiles = false,
+          hide_gitignored = false,
+          hide_hidden = false, -- only works on Windows for hidden files/directories
           hide_by_name = {
             --"node_modules"
           },

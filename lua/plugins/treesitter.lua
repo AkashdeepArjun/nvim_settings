@@ -105,5 +105,12 @@ return {
     vim.filetype.add { extension = { tfvars = 'terraform' } }
     vim.filetype.add { extension = { pipeline = 'groovy' } }
     vim.filetype.add { extension = { multibranch = 'groovy' } }
+
+    require('nvim-treesitter.configs').setup {
+      indent = {
+        enable = true,
+        additional_vim_regex_highlighting = { 'html' },
+      },
+    }
   end,
 }
