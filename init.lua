@@ -54,7 +54,6 @@ require('lazy').setup({
   require 'plugins.treesitter',
   require 'plugins.novice',
   require 'plugins.notify',
-  require 'plugins.nui',
 }, {
 
   ui = {
@@ -163,47 +162,3 @@ vim.keymap.set('n', '<leader>rr', function()
 end, { desc = 'Reload Neovim config' })
 
 require 'custom.php_toggle' -- 🟢 Your custom logic goes here (AFTER plugins)
-
--- vim.api.nvim_create_autocmd('BufWritePost', {
---   pattern = '*',
---   callback = function()
---     vim.notify('Buffer written!', vim.log.levels.INFO, { title = 'nvim-notify' })
---   end,
--- })
-
-vim.api.nvim_create_autocmd('BufWritePost', {
-  pattern = '*',
-  callback = function(args)
-    local file = args.file
-    local name = vim.fn.fnamemodify(file, ':t') -- get just the filename
-    local size = vim.fn.getfsize(file)          -- get file size in bytes
-
-    if size >= 0 then
-      vim.notify(string.format('Wrote %s (%d bytes)', name, size), vim.log.levels.INFO, { title = 'File Saved' })
-    else
-      vim.notify(string.format('Wrote %s', name), vim.log.levels.INFO, { title = 'File Saved' })
-    end
-  end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'html',
-  callback = function()
-    -- Use PHP indentation rules inside <?php ?> blocks
-    vim.cmd [[
-      setlocal indentexpr=GetPHPTemplateIndent()
-      setlocal indentkeys+=<:>,0},0),0],0>,=<?php,=?>
-    ]]
-
-    -- Simple indent function (adjust as needed)
-    function GetPHPTemplateIndent()
-      local line = vim.fn.getline(vim.v.lnum)
-      if line:match '^%s*<%?php' then
-        return vim.fn.indent(vim.v.lnum - 1) + shiftwidth()
-      elseif line:match '^%s*%?>' then
-        return vim.fn.indent(vim.v.lnum - 1) - shiftwidth()
-      end
-      return -1
-    end
-  end,
-})

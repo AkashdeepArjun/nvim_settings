@@ -21,27 +21,40 @@ local conds = require 'luasnip.extras.conditions'
 local conds_expand = require 'luasnip.extras.conditions.expand'
 
 ls.add_snippets('c', {
-  s(
-    'start',
-    fmt(
-      [[
-#define EXIT_STATUS 0
-#include<stdlib.h>
-#include<stdio.h>
+  s('ternc', {
 
-int main(){{
-
-{}
-
-return EXIT_STATUS;
-
-}}
-
-
-
-]],
-      { i(1, '//TODO') },
-      { delimeters = '{}', indent_string = [[	]] }
-    )
-  ),
-}, { key = 'c' })
+    i(1, 'cond'),
+    t '?',
+    i(2, 'value1'),
+    t ':',
+    i(3, 'value2'),
+    t ';',
+  }),
+  s('ds', {
+    i(1),
+    t 'struct',
+    i(2, ' DataStructure'),
+    t '*',
+    i(3, 'reference'),
+    t '=',
+    i(4),
+    t '(struct ',
+    i(5, 'DataStructure'),
+    t '*)',
+    i(6),
+    t 'malloc(sizeof(struct ',
+    i(7, 'DataStructure'),
+    t '*);',
+  }),
+  s('hf', {
+    t '#ifndef ',
+    i(1),
+    t { '_H_INCLUDED', '', '' },
+    i(2),
+    t '#define ',
+    f(function(args)
+      return args[1]
+    end, { 1 }),
+    t { '_H_INCLUDED', '', '', '#endif' },
+  }),
+})

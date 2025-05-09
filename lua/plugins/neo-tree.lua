@@ -1,4 +1,3 @@
-local image_info = require 'custom.image_info'
 return {
   'nvim-neo-tree/neo-tree.nvim',
   branch = 'v3.x',
@@ -41,8 +40,8 @@ return {
       enable_diagnostics = true,
       open_files_do_not_replace_types = { 'terminal', 'trouble', 'qf' }, -- when opening files, do not use windows containing these filetypes or buftypes
       open_files_using_relative_paths = false,
-      sort_case_insensitive = false,                                     -- used when sorting files and directories in the tree
-      sort_function = nil,                                               -- use a custom function for sorting files and directories in the tree
+      sort_case_insensitive = false, -- used when sorting files and directories in the tree
+      sort_function = nil, -- use a custom function for sorting files and directories in the tree
       -- sort_function = function (a,b)
       --       if a.type == b.type then
       --           return a.path > b.path
@@ -115,22 +114,22 @@ return {
         -- If you don't want to use these columns, you can set `enabled = false` for each of them individually
         file_size = {
           enabled = true,
-          width = 10,          -- width of the column
+          width = 10, -- width of the column
           required_width = 15, -- min width of window required to show this column
         },
         type = {
           enabled = true,
-          width = 10,           -- width of the column
+          width = 10, -- width of the column
           required_width = 122, -- min width of window required to show this column
         },
         last_modified = {
           enabled = true,
-          width = 20,          -- width of the column
+          width = 20, -- width of the column
           required_width = 88, -- min width of window required to show this column
         },
         created = {
           enabled = true,
-          width = 20,           -- width of the column
+          width = 20, -- width of the column
           required_width = 110, -- min width of window required to show this column
         },
         symlink_target = {
@@ -201,71 +200,6 @@ return {
           ['<'] = 'prev_source',
           ['>'] = 'next_source',
           ['i'] = 'show_file_details',
-          ['I'] = function(state)
-            local node = state.tree:get_node()
-            if node and node.type == 'file' then
-              local ext = node.name:match '^.+(%..+)$'
-              if ext and ext:lower():match '%.(png|jpe?g|svg)$' then
-                local info = require('custom.image_info').get_image_info(node.path)
-                vim.notify(info or 'No image metadata found', vim.log.levels.INFO)
-                return
-              end
-            end
-            require('neo-tree.ui.renderer').show_file_details(state)
-          end,
-
-          -- ['i'] = function(state)
-          --   local node = state.tree:get_node()
-          --   if node then
-          --     local image_info_str = image_info.image_info_component(node)
-          --     if image_info_str then
-          --       -- Show image resolution info in the info panel
-          --       vim.api.nvim_out_write(image_info_str.text .. '\n')
-          --     else
-          --       -- Fallback to the default behavior if no image info
-          --       require('neo-tree.ui.renderer').render_file_details(node)
-          --     end
-          --   end
-          -- end,
-          --
-
-          -- ['i'] = function(state)
-          --   local node = state.tree:get_node()
-          --   if node then
-          --     -- Fetch the image info component from the image_info module
-          --     local image_info_str = image_info.image_info_component(node)
-          --
-          --     -- Check if image_info_str is a table and contains a 'text' field
-          --     if image_info_str and image_info_str[1] and image_info_str[1].text then
-          --       -- Output the image info text if available
-          --       vim.api.nvim_out_write(image_info_str[1].text .. '\n')
-          --     else
-          --       -- Fallback to default behavior if no image info is available
-          --       require('neo-tree.ui.renderer').render_file_details(node)
-          --     end
-          --   end
-          -- end,
-
-          -- ['i'] = function(state)
-          --   local node = state.tree:get_node()
-          --   if node then
-          --     -- Fetch the image info component from the image_info module
-          --     local image_info_str = image_info.image_info_component(node)
-          --
-          --     -- Check if image_info_str is a valid table and has the 'text' field
-          --     if image_info_str and image_info_str[1] and image_info_str[1].text then
-          --       -- Output the image info text if available
-          --       vim.api.nvim_out_write(image_info_str[1].text .. '\n')
-          --     else
-          --       -- Fallback to the default behavior if no image info is available
-          --       -- Only call render_file_details if image_info_str is nil or empty
-          --       if node then
-          --         require('neo-tree.ui.renderer').render_file_details(node)
-          --       end
-          --     end
-          --   end
-          -- end,
-
           -- ["i"] = {
           --   "show_file_details",
           --   -- format strings of the timestamps shown for date created and last modified (see `:h os.date()`)
@@ -279,29 +213,14 @@ return {
         },
       },
       nesting_rules = {},
-
       filesystem = {
-
-        components = {
-          image_info_part = image_info.image_info_component,
-        },
-
-        renderers = {
-          file = {
-            { 'icon' },
-            { 'name' },
-            { 'image_info_part', highlight = 'Comment' },
-          },
-        },
-
         filtered_items = {
-          visible = true,     -- when true, they will just be displayed differently than normal items hide_dotfiles = false,
+          visible = true, -- when true, they will just be displayed differently than normal items hide_dotfiles = false,
           hide_gitignored = true,
           hide_hidden = true, -- only works on Windows for hidden files/directories
           hide_by_name = {
             --"node_modules"
           },
-
           hide_by_pattern = { -- uses glob style patterns
             --"*.meta",
             --"*/src/*/tsconfig.json",
@@ -320,13 +239,12 @@ return {
             --".null-ls_*",
           },
         },
-
         follow_current_file = {
-          enabled = false,                      -- This will find and focus the file in the active buffer every time
+          enabled = false, -- This will find and focus the file in the active buffer every time
           --               -- the current file is changed while the tree is open.
-          leave_dirs_open = false,              -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
+          leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
         },
-        group_empty_dirs = false,               -- when true, empty folders will be grouped together
+        group_empty_dirs = false, -- when true, empty folders will be grouped together
         hijack_netrw_behavior = 'open_default', -- netrw disabled, opening a directory opens neo-tree
         -- in whatever position is specified in window.position
         -- "open_current",  -- netrw disabled, opening a directory opens within the
@@ -371,11 +289,11 @@ return {
       },
       buffers = {
         follow_current_file = {
-          enabled = true,          -- This will find and focus the file in the active buffer every time
+          enabled = true, -- This will find and focus the file in the active buffer every time
           --              -- the current file is changed while the tree is open.
           leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
         },
-        group_empty_dirs = true,   -- when true, empty folders will be grouped together
+        group_empty_dirs = true, -- when true, empty folders will be grouped together
         show_unloaded = true,
         window = {
           mappings = {

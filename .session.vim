@@ -13,35 +13,21 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
+badd +53 lua/core/keymaps.lua
+badd +3 test.css
+badd +9 .session.vim
+badd +12 lua/plugins/auto_session.lua
+badd +47 init.lua
+badd +7 hi.java
+badd +8 lua/plugins/color-highlight.lua
 badd +11 lua/plugins/lualine.lua
-badd +349 LuaSnip/html.lua
-badd +28 LuaSnip/all.lua
-badd +26 lua/plugins/luasnip.lua
-badd +1 lua/plugins/fzf.lua
-badd +259 lua/plugins/lsp.lua
-badd +1 lua/plugins/mini_surround.lua
-badd +1 lua/plugins/misc.lua
-badd +1 lua/plugins/muren.lua
-badd +1 lua/plugins/nvim-planery.lua
-badd +26 lua/plugins/neo-tree.lua
-badd +35 lua/plugins/ccc.lua
-badd +12 lua/plugins/color-highlight.lua
-badd +1 lua/plugins/colortheme.lua
-badd +1 lua/plugins/indent-blankline.lua
-badd +14 test.html
-badd +182 init.lua
-badd +41 lua/core/options.lua
-badd +25 lua/plugins/treesitter.lua
-badd +14 lua/custom/php_toggle.lua
-badd +1 health://
-badd +620 lua/core/keymaps.lua
-badd +1 lua/plugins/novice.lua
-badd +2 lua/plugins/notify.lua
-badd +9 lua/plugins/spectre.lua
-badd +1 test.css
+badd +32 lua/plugins/lsp.lua
+badd +122 lua/plugins/autocomplete.lua
+badd +1 key_info.txt
+badd +348 health://
 argglobal
 %argdel
-edit lua/core/keymaps.lua
+edit lua/plugins/autocomplete.lua
 let s:save_splitbelow = &splitbelow
 let s:save_splitright = &splitright
 set splitbelow splitright
@@ -58,42 +44,46 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-wincmd =
+exe 'vert 1resize ' . ((&columns * 40 + 67) / 134)
+exe 'vert 2resize ' . ((&columns * 93 + 67) / 134)
 tcd ~/.config/nvim
 argglobal
 enew
 file ~/.config/nvim/neo-tree\ filesystem\ \[1]
-balt ~/.config/nvim/test.html
-setlocal foldmethod=manual
-setlocal foldexpr=0
-setlocal foldmarker={{{,}}}
-setlocal foldignore=#
-setlocal foldlevel=0
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldenable
+balt ~/.config/nvim/lua/plugins/autocomplete.lua
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+lcd ~/.config/nvim
 wincmd w
 argglobal
-balt ~/.config/nvim/init.lua
-setlocal foldmethod=manual
-setlocal foldexpr=v:lua.vim.treesitter.foldexpr()
-setlocal foldmarker={{{,}}}
-setlocal foldignore=#
-setlocal foldlevel=0
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldenable
+balt ~/.config/nvim/lua/plugins/lsp.lua
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 620 - ((16 * winheight(0) + 15) / 31)
+let s:l = 122 - ((24 * winheight(0) + 14) / 29)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 620
-normal! 014|
+keepjumps 122
+normal! 06|
+lcd ~/.config/nvim
 wincmd w
 2wincmd w
-wincmd =
+exe 'vert 1resize ' . ((&columns * 40 + 67) / 134)
+exe 'vert 2resize ' . ((&columns * 93 + 67) / 134)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
