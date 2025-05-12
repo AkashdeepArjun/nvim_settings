@@ -282,7 +282,7 @@ print_r($<ref>);
   --   end, {})
   -- ),
 
-  s({ regTrig = true, wordTrig = false, trig = '(%w+)%.(%a*)%*(%d)' }, {
+  s({ regTrig = true, wordTrig = false, trig = '(%w+)%.(%a*)%*(%d+)' }, {
     d(1, function(_, snip)
       local tag = snip.captures[1]
       local class_name = snip.captures[2]
@@ -307,9 +307,7 @@ print_r($<ref>);
       return sn(nil, nodes)
     end),
   }),
-  s('emp_arry',
-    fmt([[${ref} = array({elements});]], { ref = i(1, 'araay_name'), elements = i(2) },
-      { delimiters = '{}', indent_string = [[	]] })),
+  s('emp_arry', fmt([[${ref} = array({elements});]], { ref = i(1, 'araay_name'), elements = i(2) }, { delimiters = '{}', indent_string = [[	]] })),
   s(
     'debug_mode',
     fmt(
@@ -351,4 +349,89 @@ print_r($<ref>);
       {}
     )
   ),
+  s(
+    'simple_class',
+    fmt(
+      [[
+  class {cname}{{
+
+
+  function {fname}() {{
+
+      {todo}
+
+  }}
+
+
+  }}
+
+  {}
+
+  ]],
+      { cname = i(1, 'className'), fname = i(2, 'functionName'), todo = i(3, '//TODO'), i(0) },
+      { delimiters = '{}' }
+    )
+  ),
+  s(
+    { regTrig = true, trig = 'af(%d+)', wordTrig = false },
+    d(1, function(_, snip)
+      -- local num_paras = tonumber(snip.captures[1])
+      -- if not num_paras or num_paras < 1 then
+      --   num_paras = 1
+      -- end
+      --
+      --
+      local num_paras = (snip.captures and tonumber(snip.captures[1]))
+
+      print('paras passed ' .. num_paras)
+
+      local nodes = {}
+
+      -- nodes = { i(1, 'arg1') }
+
+      for j = 1, num_paras do
+        if j > 1 then
+          table.insert(nodes, t ',')
+          -- vim.list_extend(nodes, t ',')
+        end
+        -- vim.list_extend(nodes, i(j, 'arg' .. j))
+        table.insert(nodes, i(j, 'arg'))
+      end
+
+      local body_index = num_paras + 1
+      local final_nodes = {}
+      table.insert(final_nodes, t 'fn(')
+      for _, node in ipairs(nodes) do
+        table.insert(final_nodes, node)
+      end
+      table.insert(final_nodes, t { ') =>', '\t' })
+      table.insert(final_nodes, i(body_index, '//TODO'))
+      table.insert(final_nodes, t { '', '' })
+
+      return sn(nil, final_nodes)
+
+      -- return sn(nil, {
+      --   t 'fn(',
+      --   -- Opening parenthesis
+      --   unpack(nodes), -- All parameters (i1, i2, ...)
+      --   t ') => {', -- Arrow function start
+      --   t { '', '\t' }, -- Newline + tab
+      --   i(num_paras + 1, '//TODO'), -- Body (LAST tab stop)
+      --   t { '', '}' }, -- Closing brace
+      --   -- No i(0) - cursor stays at //TODO
+      -- })
+
+      -- return sn(nil, {
+      --   t 'fn(',
+      --   unpack(nodes),
+      --   t { ') => {', '\t' },
+      --   i(body_index, '//TODO'), -- last tab stop is inside block
+      --   t { '', '}' },
+      -- })
+    end)
+  ),
+  -- return sn(nil, { i(1), t { '(' }, param_nodes, i(num_paras + 2), t { ')', '=>' }, i(num_paras + 3, 'todo'), i(0) })
+
+  -- return sn(nil, { t '(', unpack(nodes), t { ')=>{', '', '' }, i(num_paras + 1, '//TODO'), t { '', '}' } })
+  -- return sn(nil, { t 'captured ', i(1, snip.captures[1]) })
 }, { key = 'html' })
