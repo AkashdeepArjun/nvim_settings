@@ -264,7 +264,7 @@ print_r($<ref>);
     end, {}),
   }),
 
-  postfix('brc', {
+  postfix('.brc', {
 
     f(function()
       return '{' .. parent.snippet.env.POSTFIX_MATCH .. '}'
@@ -430,8 +430,4 @@ print_r($<ref>);
       -- })
     end)
   ),
-  -- return sn(nil, { i(1), t { '(' }, param_nodes, i(num_paras + 2), t { ')', '=>' }, i(num_paras + 3, 'todo'), i(0) })
-
-  -- return sn(nil, { t '(', unpack(nodes), t { ')=>{', '', '' }, i(num_paras + 1, '//TODO'), t { '', '}' } })
-  -- return sn(nil, { t 'captured ', i(1, snip.captures[1]) })
 }, { key = 'html' })

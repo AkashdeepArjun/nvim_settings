@@ -44,4 +44,45 @@ return EXIT_STATUS;
       { delimeters = '{}', indent_string = [[	]] }
     )
   ),
+  s(
+    { wordTrig = false, regTrig = true, trig = 'fl(%d+),(%d+)' },
+    d(1, function(_, snip)
+      local start_index = snip.captures[1]
+      local end_index = snip.captures[2]
+      -- local nodes = {}
+      local new_node = fmt(
+        [[
+for(int index={};index<={};index++){{
+      {}
+}}
+{}
+]],
+        { i(1, start_index), i(2, end_index), i(3, '//TODO'), i(0) },
+        { delimiters = '{}' }
+      )
+      return sn(nil, new_node)
+    end)
+  ),
+
+  s(
+    { wordTrig = false, regTrig = true, trig = 'wl(%d+),(%d+)' },
+    d(1, function(_, snip)
+      local begin = snip.captures[1]
+      local end_pt = snip.captures[2]
+      local new_node = fmt(
+        [[
+    int count={};
+    while(count<={}){{
+        {}
+    count++;
+    }}
+    {}
+    ]],
+        { t(begin), t(end_pt), i(1, '//TODO'), i(0) },
+        { delimiters = '{}' }
+      )
+
+      return sn(nil, new_node)
+    end)
+  ),
 }, { key = 'c' })

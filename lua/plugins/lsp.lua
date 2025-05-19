@@ -110,7 +110,7 @@ nvim_lsp.html.setup({
   },
   on_attach = function(client, bufnr)
     -- Disable LSP formatting specifically for HTML files
-    if vim.bo.filetype == 'html' then
+    if vim.bo.filetype == 'html' or  vim.bo.filetype == 'php' then
       client.server_capabilities.documentFormattingProvider = false
     end
   end,
@@ -121,7 +121,7 @@ nvim_lsp.html.setup({
 
     -- Enable the following language servers
     local servers = {
-      html = { filetypes = { 'html', 'twig', 'hbs' } },
+      html = { filetypes = { 'html', 'twig', 'hbs','php' } },
       lua_ls = {
         -- cmd = {...},
         -- filetypes { ...},

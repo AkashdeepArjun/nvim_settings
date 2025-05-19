@@ -55,6 +55,7 @@ require('lazy').setup({
   require 'plugins.novice',
   require 'plugins.notify',
   require 'plugins.nui',
+  require 'plugins.bdelete',
 }, {
 
   ui = {
@@ -205,5 +206,16 @@ vim.api.nvim_create_autocmd('FileType', {
       end
       return -1
     end
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'c',
+  callback = function()
+    vim.treesitter.language.register('c', 'c') -- safety net
+    vim.bo.indentexpr = ''                     -- disable Treesitter indenting
+    vim.bo.autoindent = true
+    vim.bo.smartindent = true
+    vim.bo.cindent = true
   end,
 })

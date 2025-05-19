@@ -16,7 +16,7 @@ return {
           libuv = true,
         },
       }
-
+      ls.filetype_extend('php', { 'html' })
       require('luasnip').config.set_config {
         history = true,
         updateevents = 'TextChanged,TextChangedI',
@@ -31,9 +31,38 @@ return {
       --   pattern = 'LuasnipInsertNodeLeave',
       --   callback = function()
       --     -- Force reindent current line
-      --     vim.cmd 'normal! =='
+      --     vim.cmd [[normal! `[='] ]]
       --   end,
       -- })
+
+      -- vim.api.nvim_create_autocmd('User', {
+      --   pattern = 'LuasnipExpand',
+      --   callback = function()
+      --     vim.schedule(function()
+      --       local start_pos = vim.fn.getpos("'[")[2]
+      --       local end_pos = vim.fn.getpos("']")[2]
+      --
+      --       if start_pos > 0 and end_pos > 0 then
+      --         vim.cmd(string.format('silent %d,%dnormal! ==', start_pos, end_pos))
+      --       end
+      --     end)
+      --   end,
+      -- })
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'LuasnipExpand',
+        callback = function()
+          vim.schedule(function()
+            local start_pos = vim.fn.getpos("'[")[2]
+            local end_pos = vim.fn.getpos("']")[2]
+
+            if start_pos > 0 and end_pos > 0 then
+              -- Move to start, visually select to end, then indent
+              vim.cmd(string.format('normal! %dGV%dG=', start_pos, end_pos))
+            end
+          end)
+        end,
+      })
 
       -- ls.config.set_config {
       --   enable_autosnippets = true,

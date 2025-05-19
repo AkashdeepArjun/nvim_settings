@@ -43,8 +43,9 @@ vim.opt.formatoptions:remove { 'c', 'r', 'o' }       -- don't insert the current
 vim.opt.runtimepath:remove '/usr/share/vim/vimfiles' -- separate vim plugins from neovim in case vim still in use
 -- vim.o.copyindent = true
 -- vim.o.preserveindent = true
--- vim.o.autoindent = true
--- vim.o.smartindent = true
+vim.o.autoindent = true
+vim.o.smartindent = true
+vim.o.cindent = true
 -- vim.o.expandtab = true
 -- vim.o.shiftwidth = 2
 -- vim.o.tabstop = 2
