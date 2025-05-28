@@ -46,6 +46,8 @@ vim.keymap.set('n', '<leader>gl', ':FzfLua live_grep_glob<CR>', opts)
 
 vim.keymap.set('n', '<leader>fl', ':FzfLua files<CR>', opts)
 
+vim.keymap.set('n', '<leader>clg', ':FzfLua lgrep_curbuf<CR>', opts)
+
 vim.keymap.set('n', '<leader>cs', ':FzfLua colorschemes<CR>', opts)
 
 vim.keymap.set('n', '<leader>bf', ':FzfLua buffers<CR>', opts)
@@ -719,7 +721,7 @@ vim.keymap.set('n', '<leader>fb', function()
         -- Handle case-insensitivity manually by converting both pattern and text to lowercase
         if case_insensitive then
           pattern = pattern:lower() -- Convert pattern to lowercase
-          text = text:lower() -- Convert text to lowercase
+          text = text:lower()       -- Convert text to lowercase
         end
 
         -- Perform the pattern replacement using Lua's gsub (case-insensitive if selected)
@@ -1467,38 +1469,118 @@ vim.keymap.set('v', '<leader>sx', function()
   end)
 end, { desc = 'Search and Replace in Visual Selection' })
 
+-- vim.keymap.set('n', '<leader>ct', function()
+--   local current = vim.api.nvim_get_current_buf()
+--   local buffers = vim.api.nvim_list_bufs()
+--
+--   local deleted = 0
+--
+--   for _, buf in ipairs(buffers) do
+--     if buf ~= current and vim.api.nvim_buf_is_loaded(buf) then
+--       local ok, err = pcall(require('bufdelete').bufdelete, buf, true)
+--       if ok then
+--         deleted = deleted + 1
+--       else
+--         vim.notify('Failed to delete buffer ' .. buf .. ': ' .. err, vim.log.levels.ERROR)
+--       end
+--     end
+--   end
+--
+--   vim.notify('Closed ' .. deleted .. ' buffers', vim.log.levels.INFO)
+-- end, { desc = 'Close all buffers except current' })
+--
+-- vim.keymap.set('n', '<leader>cl', function()
+--   local current = vim.api.nvim_get_current_buf()
+--   local buffers = vim.t.bufs or vim.api.nvim_list_bufs()
+--
+--   local index = nil
+--   for i, buf in ipairs(buffers) do
+--     if buf == current then
+--       index = i
+--       break
+--     end
+--   end
+--
+--   if not index then
+--     return
+--   end
+--
+--   for i = 1, index - 1 do
+--     if vim.api.nvim_buf_is_loaded(buffers[i]) then
+--       pcall(require('bufdelete').bufdelete, buffers[i], true)
+--     end
+--   end
+--
+--   vim.notify('Closed buffers to the left', vim.log.levels.INFO)
+-- end, { desc = 'Close buffers to the left' })
+--
+-- vim.keymap.set('n', '<leader>cr', function()
+--   local current = vim.api.nvim_get_current_buf()
+--   local buffers = vim.t.bufs or vim.api.nvim_list_bufs()
+--
+--   local index = nil
+--   for i, buf in ipairs(buffers) do
+--     if buf == current then
+--       index = i
+--       break
+--     end
+--   end
+--
+--   if not index then
+--     return
+--   end
+--
+--   for i = index + 1, #buffers do
+--     if vim.api.nvim_buf_is_loaded(buffers[i]) then
+--       pcall(require('bufdelete').bufdelete, buffers[i], true)
+--     end
+--   end
+--
+--   vim.notify('Closed buffers to the right', vim.log.levels.INFO)
+-- end, { desc = 'Close buffers to the right' })
+
+local function get_ordered_buffers()
+  local ok, bufferline = pcall(require, 'bufferline')
+  local buffers = {}
+
+  if ok and bufferline and bufferline.state and bufferline.state.buffers then
+    for _, buf in ipairs(bufferline.state.buffers) do
+      table.insert(buffers, buf.id)
+    end
+  else
+    buffers = vim.api.nvim_list_bufs()
+  end
+
+  return buffers
+end
+
 vim.keymap.set('n', '<leader>ct', function()
   local current = vim.api.nvim_get_current_buf()
-  local buffers = vim.api.nvim_list_bufs()
-
-  local deleted = 0
+  local buffers = get_ordered_buffers()
+  local closed = 0
 
   for _, buf in ipairs(buffers) do
     if buf ~= current and vim.api.nvim_buf_is_loaded(buf) then
-      local ok, err = pcall(require('bufdelete').bufdelete, buf, true)
-      if ok then
-        deleted = deleted + 1
-      else
-        vim.notify('Failed to delete buffer ' .. buf .. ': ' .. err, vim.log.levels.ERROR)
-      end
+      pcall(require('bufdelete').bufdelete, buf, true)
+      closed = closed + 1
     end
   end
 
-  vim.notify('Closed ' .. deleted .. ' buffers', vim.log.levels.INFO)
+  vim.notify('Closed ' .. closed .. ' buffer(s)', vim.log.levels.INFO)
 end, { desc = 'Close all buffers except current' })
 
 vim.keymap.set('n', '<leader>cl', function()
   local current = vim.api.nvim_get_current_buf()
-  local buffers = vim.t.bufs or vim.api.nvim_list_bufs()
+  local buffers = get_ordered_buffers()
+  local closed = 0
 
-  local index = nil
+  local index
   for i, buf in ipairs(buffers) do
     if buf == current then
       index = i
       break
     end
   end
-
   if not index then
     return
   end
@@ -1506,24 +1588,25 @@ vim.keymap.set('n', '<leader>cl', function()
   for i = 1, index - 1 do
     if vim.api.nvim_buf_is_loaded(buffers[i]) then
       pcall(require('bufdelete').bufdelete, buffers[i], true)
+      closed = closed + 1
     end
   end
 
-  vim.notify('Closed buffers to the left', vim.log.levels.INFO)
+  vim.notify('Closed ' .. closed .. ' buffer(s) to the left', vim.log.levels.INFO)
 end, { desc = 'Close buffers to the left' })
 
 vim.keymap.set('n', '<leader>cr', function()
   local current = vim.api.nvim_get_current_buf()
-  local buffers = vim.t.bufs or vim.api.nvim_list_bufs()
+  local buffers = get_ordered_buffers()
+  local closed = 0
 
-  local index = nil
+  local index
   for i, buf in ipairs(buffers) do
     if buf == current then
       index = i
       break
     end
   end
-
   if not index then
     return
   end
@@ -1531,8 +1614,9 @@ vim.keymap.set('n', '<leader>cr', function()
   for i = index + 1, #buffers do
     if vim.api.nvim_buf_is_loaded(buffers[i]) then
       pcall(require('bufdelete').bufdelete, buffers[i], true)
+      closed = closed + 1
     end
   end
 
-  vim.notify('Closed buffers to the right', vim.log.levels.INFO)
+  vim.notify('Closed ' .. closed .. ' buffer(s) to the right', vim.log.levels.INFO)
 end, { desc = 'Close buffers to the right' })
