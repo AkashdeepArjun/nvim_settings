@@ -1991,3 +1991,6 @@ end, { desc = 'Fuzzy-ish Hop in Current Line' })
 vim.keymap.set('n', '<leader>rf', require('custom.phpnav').open_php_related_file, {
   desc = 'Jump to required/related file',
 })
+
+-- Keymap
+vim.keymap.set('n', '<leader>z', '<cmd>ZenMode<CR>', { noremap = true, silent = true })

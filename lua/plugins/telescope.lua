@@ -6,7 +6,7 @@ return {
     'nvim-lua/plenary.nvim',
     -- Fuzzy Finder Algorithm which requires local dependencies to be built.
     -- Only load if `make` is available. Make sure you have the system
-    -- requirements installed.
+    -- requirements installeds
     {
       'nvim-telescope/telescope-fzf-native.nvim',
       build = 'make',
@@ -23,6 +23,7 @@ return {
     local telescope = require 'telescope'
     local actions = require 'telescope.actions'
     local builtin = require 'telescope.builtin'
+    local action_Statre = require 'telescope.actions.state'
 
     require('telescope').setup {
       defaults = {
@@ -66,8 +67,25 @@ return {
         },
       },
       extensions = {
-        ['ui-select'] = {
-          require('telescope.themes').get_dropdown(),
+        ['ui-select'] = require('telescope.themes').get_dropdown {},
+        grapple = {
+          mappings = {
+            default = function(prompt_bufnr)
+              actions.close(prompt_bufnr)
+              local entry = action_state.get_selected_entry()
+              vim.cmd('edit ' .. entry.path)
+            end,
+            ['<M-v>'] = function(prompt_bufnr)
+              actions.close(prompt_bufnr)
+              local entry = action_state.get_selected_entry()
+              vim.cmd('vsplit ' .. entry.path)
+            end,
+            ['<M-s>'] = function(prompt_bufnr)
+              actions.close(prompt_bufnr)
+              local entry = action_state.get_selected_entry()
+              vim.cmd('split ' .. entry.path)
+            end,
+          },
         },
       },
       git_files = {
@@ -78,6 +96,7 @@ return {
     -- Enable telescope fzf native, if installed
     pcall(require('telescope').load_extension, 'fzf')
     pcall(require('telescope').load_extension, 'ui-select')
+    pcall(require('telescope').load_extension, 'grapple') --
 
     vim.keymap.set('n', '<leader>?', builtin.oldfiles, { desc = '[?] Find recently opened files' })
     vim.keymap.set('n', '<leader>sb', builtin.buffers, { desc = '[S]earch existing [B]uffers' })

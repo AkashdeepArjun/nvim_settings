@@ -60,6 +60,7 @@ require('lazy').setup({
   require 'plugins.flash',
   require 'plugins.hop',
   require 'plugins.php_setup',
+  require 'plugins.zen_mode',
 }, {
 
   ui = {

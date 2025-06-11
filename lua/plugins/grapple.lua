@@ -22,5 +22,9 @@ return {
     vim.keymap.set('n', '<leader>GB', '<cmd>Grapple use_scope git_branch<cr>')
     vim.keymap.set('n', '<leader>ts', '<cmd>Grapple toggle_scopes<cr>')
     vim.keymap.set('n', '<leader>tls', '<cmd>Grapple toggle_loaded<cr>')
+
+    require('grapple').setup {}
+
+    require('telescope').load_extension 'grapple'
   end,
 }
