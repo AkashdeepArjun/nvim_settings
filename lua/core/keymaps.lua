@@ -695,52 +695,171 @@ end, { desc = 'reload current file' })
 
 vim.keymap.set('n', '<leader>fb', function()
   local bufnr = vim.api.nvim_get_current_buf()
-
-  -- Get all the lines in the buffer
+  local ns_id = vim.api.nvim_create_namespace 'SearchReplaceHighlight'
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
   local text = table.concat(lines, '\n')
 
-  -- Prompt for the case-insensitive toggle
   vim.ui.select({ 'Yes', 'No' }, {
     prompt = 'Enable case-insensitive search?',
   }, function(choice)
     local case_insensitive = (choice == 'Yes')
 
-    -- Prompt for the Lua pattern
     vim.ui.input({ prompt = 'Lua Pattern to Search:' }, function(pattern)
       if not pattern or pattern == '' then
         return
       end
 
-      -- Prompt for the replacement text
       vim.ui.input({ prompt = 'Replace With:' }, function(replacement)
         if replacement == nil then
           return
         end
 
-        -- Handle case-insensitivity manually by converting both pattern and text to lowercase
-        if case_insensitive then
-          pattern = pattern:lower() -- Convert pattern to lowercase
-          text = text:lower()       -- Convert text to lowercase
+        -- Helper to clear highlights
+        local function clear_highlight()
+          vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
         end
 
-        -- Perform the pattern replacement using Lua's gsub (case-insensitive if selected)
+        -- Highlight matches
+        local function highlight_matches(pat)
+          for i, line in ipairs(lines) do
+            local col = 1
+            while true do
+              local s, e = line:find(pat, col)
+              if not s then
+                break
+              end
+              vim.api.nvim_buf_add_highlight(bufnr, ns_id, 'Search', i - 1, s - 1, e)
+              col = e + 1
+            end
+          end
+        end
+
         local ok, replaced = pcall(function()
-          return text:gsub(pattern, replacement)
+          local pat = pattern
+          if case_insensitive then
+            pat = pattern:gsub('%a', function(c)
+              return string.format('[%s%s]', c:lower(), c:upper())
+            end)
+          end
+
+          highlight_matches(pat)
+
+          -- Delay replacement slightly so user can see highlights
+          vim.defer_fn(function()
+            local final_text = text:gsub(pat, replacement)
+            local replaced_lines = vim.split(final_text, '\n', { plain = true })
+            vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, replaced_lines)
+            clear_highlight()
+            vim.notify('Buffer replaced successfully', vim.log.levels.INFO)
+          end, 300) -- 300ms delay to show highlights
+
+          return true
         end)
 
-        -- If the replacement was successful, update the text in the buffer
-        if ok then
-          local replaced_lines = vim.split(replaced, '\n', { plain = true })
-          vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, replaced_lines)
-          vim.notify('Buffer replaced successfully', vim.log.levels.INFO)
-        else
+        if not ok then
+          clear_highlight()
           vim.notify('Invalid Lua pattern or replacement!', vim.log.levels.ERROR)
         end
       end)
     end)
   end)
-end, { desc = 'Search and Replace Entire Buffer with Case Toggle' })
+end, { desc = 'Search and Replace with Highlight' })
+-- vim.keymap.set('n', '<leader>fb', function()
+--   local bufnr = vim.api.nvim_get_current_buf()
+--   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+--   local text = table.concat(lines, '\n')
+--
+--   vim.ui.select({ 'Yes', 'No' }, {
+--     prompt = 'Enable case-insensitive search?',
+--   }, function(choice)
+--     local case_insensitive = (choice == 'Yes')
+--
+--     vim.ui.input({ prompt = 'Lua Pattern to Search:' }, function(pattern)
+--       if not pattern or pattern == '' then
+--         return
+--       end
+--
+--       vim.ui.input({ prompt = 'Replace With:' }, function(replacement)
+--         if replacement == nil then
+--           return
+--         end
+--
+--         local ok, replaced = pcall(function()
+--           if case_insensitive then
+--             -- Modify pattern to match case-insensitively
+--             -- Note: This only works for simple letters, not full Unicode.
+--             local function ci_pattern(pat)
+--               return pat:gsub('%a', function(c)
+--                 return string.format('[%s%s]', c:lower(), c:upper())
+--               end)
+--             end
+--
+--             pattern = ci_pattern(pattern)
+--           end
+--
+--           return text:gsub(pattern, replacement)
+--         end)
+--
+--         if ok then
+--           local replaced_lines = vim.split(replaced, '\n', { plain = true })
+--           vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, replaced_lines)
+--           vim.notify('Buffer replaced successfully', vim.log.levels.INFO)
+--         else
+--           vim.notify('Invalid Lua pattern or replacement!', vim.log.levels.ERROR)
+--         end
+--       end)
+--     end)
+--   end)
+-- end, { desc = 'Search and Replace Entire Buffer with Case Toggle' })
+
+-- vim.keymap.set('n', '<leader>fb', function()
+--   local bufnr = vim.api.nvim_get_current_buf()
+--
+--   -- Get all the lines in the buffer
+--   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+--   local text = table.concat(lines, '\n')
+--
+--   -- Prompt for the case-insensitive toggle
+--   vim.ui.select({ 'Yes', 'No' }, {
+--     prompt = 'Enable case-insensitive search?',
+--   }, function(choice)
+--     local case_insensitive = (choice == 'Yes')
+--
+--     -- Prompt for the Lua pattern
+--     vim.ui.input({ prompt = 'Lua Pattern to Search:' }, function(pattern)
+--       if not pattern or pattern == '' then
+--         return
+--       end
+--
+--       -- Prompt for the replacement text
+--       vim.ui.input({ prompt = 'Replace With:' }, function(replacement)
+--         if replacement == nil then
+--           return
+--         end
+--
+--         -- Handle case-insensitivity manually by converting both pattern and text to lowercase
+--         if case_insensitive then
+--           pattern = pattern:lower() -- Convert pattern to lowercase
+--           text = text:lower()       -- Convert text to lowercase
+--         end
+--
+--         -- Perform the pattern replacement using Lua's gsub (case-insensitive if selected)
+--         local ok, replaced = pcall(function()
+--           return text:gsub(pattern, replacement)
+--         end)
+--
+--         -- If the replacement was successful, update the text in the buffer
+--         if ok then
+--           local replaced_lines = vim.split(replaced, '\n', { plain = true })
+--           vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, replaced_lines)
+--           vim.notify('Buffer replaced successfully', vim.log.levels.INFO)
+--         else
+--           vim.notify('Invalid Lua pattern or replacement!', vim.log.levels.ERROR)
+--         end
+--       end)
+--     end)
+--   end)
+-- end, { desc = 'Search and Replace Entire Buffer with Case Toggle' })
 
 -- vim.keymap.set('v', '<leader>sx', function()
 --   local bufnr = vim.api.nvim_get_current_buf()
@@ -1620,3 +1739,255 @@ vim.keymap.set('n', '<leader>cr', function()
 
   vim.notify('Closed ' .. closed .. ' buffer(s) to the right', vim.log.levels.INFO)
 end, { desc = 'Close buffers to the right' })
+
+vim.keymap.set('n', '<leader>gg', function()
+  vim.cmd 'LazyGit'
+end, opts)
+
+-- vim.keymap.set('n', '<leader>cll', function()
+--   require('fzf-lua').live_grep { search = vim.fn.getline '.' }
+-- end, opts)
+
+-- vim.keymap.set('n', '<leader>cll', function()
+--   require('flash').jump {
+--     search = {
+--       mode = 'fuzzy', -- fuzzy match
+--       max_length = false, -- let full line be searched
+--     },
+--     label = {
+--       after = { 0, 0 }, -- inline label placement
+--       before = false,
+--       style = 'inline',
+--     },
+--     highlight = {
+--       matches = true, -- highlight matches live
+--     },
+--     matcher = function(pattern)
+--       -- Custom matcher for current line only
+--       local line = vim.fn.getline '.'
+--       local matches = {}
+--
+--       for word in vim.fn.split(line, '\\s\\+'), 1 do
+--         if word:lower():find(pattern:lower(), 1, true) then
+--           table.insert(matches, word)
+--         end
+--       end
+--
+--       return matches
+--     end,
+--   }
+-- end, { desc = 'Fuzzy Jump in Current Line' })
+--
+--
+-- vim.keymap.set('n', '<leader>cll', function()
+--   local line = vim.api.nvim_get_current_line()
+--   local row = vim.api.nvim_win_get_cursor(0)[1]
+--
+--   -- Set extmark range for just the current line
+--   require('flash').jump {
+--     search = { mode = 'fuzzy' },
+--     label = {
+--       after = { 0, 0 },
+--       before = false,
+--       style = 'inline',
+--     },
+--     highlight = {
+--       matches = true,
+--     },
+--     matcher = function(win, state)
+--       local match = {}
+--       for col = 1, #line do
+--         table.insert(match, {
+--           pos = { row, col },
+--           end_pos = { row, col + 1 },
+--         })
+--       end
+--       return match
+--     end,
+--   }
+-- end, { desc = 'Fuzzy Jump in Current Line' })
+--
+
+-- vim.keymap.set("n", "<leader>cll", function()
+--   local row = vim.api.nvim_win_get_cursor(0)[1]
+--   local line = vim.api.nvim_get_current_line()
+--   local matches = {}
+--
+--   for col = 0, #line - 1 do
+--     table.insert(matches, {
+--       pos = { row, col },
+--     })
+--   end
+--
+--   require("flash").jump({
+--     search = {
+--       mode = "fuzzy",
+--     },
+--     matcher = function(pattern)
+--       local filtered = {}
+--       for _, match in ipairs(matches) do
+--         local char = line:sub(match.pos[2] + 1, match.pos[2] + 1)
+--         if char:lower():find(pattern:lower(), 1, true) then
+--           table.insert(filtered, match)
+--         end
+--       end
+--       return filtered
+--     end,
+--     label = {
+--       after = { 0, 0 },
+--       style = "inline",
+--     },
+--     highlight = {
+--       matches = true,
+--     },
+--   })
+-- end, { desc = "Fuzzy Jump Within Current Line" })
+--
+
+-- vim.keymap.set('n', '<leader>cll', function()
+--   local row = vim.api.nvim_win_get_cursor(0)[1]
+--
+--   require('flash').jump {
+--     search = {
+--       mode = 'fuzzy',
+--     },
+--     matcher = function(pattern)
+--       print('Pattern: ', pattern)
+--
+--       return {
+--         {
+--           pos = { row - 1, 2 }, -- 0-indexed line and column
+--           end_pos = { row - 1, 3 }, -- 1-char long match
+--         },
+--         {
+--           pos = { row - 1, 5 },
+--           end_pos = { row - 1, 6 },
+--         },
+--       }
+--     end,
+--     label = {
+--       after = { 0, 0 },
+--       style = 'inline',
+--     },
+--     highlight = {
+--       matches = true,
+--     },
+--   }
+-- end, { desc = 'Test Flash Hardcoded Match' })
+--
+
+-- vim.keymap.set('n', '<leader>cll', function()
+--   local row = vim.api.nvim_win_get_cursor(0)[1]
+--   local original_line = vim.api.nvim_get_current_line()
+--   local matches = {}
+--
+--   for col = 0, #original_line - 1 do
+--     table.insert(matches, {
+--       pos = { row - 1, col },
+--       end_pos = { row - 1, col + 1 },
+--     })
+--   end
+--
+--   require('flash').jump {
+--     search = {
+--       mode = 'fuzzy',
+--     },
+--     matcher = function(pattern)
+--       local filtered = {}
+--       for _, match in ipairs(matches) do
+--         local ok, char = pcall(function()
+--           return original_line:sub(match.pos[2] + 1, match.pos[2] + 1)
+--         end)
+--         if ok and char and char:lower():find(pattern:lower(), 1, true) then
+--           table.insert(filtered, match)
+--         end
+--       end
+--       return filtered
+--     end,
+--     label = {
+--       after = { 0, 0 },
+--       style = 'inline',
+--     },
+--     highlight = {
+--       matches = true,
+--     },
+--   }
+-- end, { desc = 'Fuzzy Jump Within Current Line' })
+--
+
+-- vim.keymap.set('n', '<leader>cll', function()
+--   local row = vim.api.nvim_win_get_cursor(0)[1]
+--   local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+--
+--   local matches = {}
+--   for col = 0, #line - 1 do
+--     table.insert(matches, {
+--       pos = { row - 1, col },
+--       end_pos = { row - 1, col + 1 },
+--     })
+--   end
+--
+--   require('flash').jump {
+--     search = {
+--       mode = 'fuzzy',
+--     },
+--     matcher = function(pattern)
+--       local filtered = {}
+--       for _, match in ipairs(matches) do
+--         local char = line:sub(match.pos[2] + 1, match.pos[2] + 1)
+--         if pattern == '' or char:lower():find(pattern:lower(), 1, true) then
+--           table.insert(filtered, match)
+--         end
+--       end
+--       return filtered
+--     end,
+--     label = {
+--       style = 'inline',
+--     },
+--     highlight = {
+--       matches = true,
+--     },
+--   }
+-- end)
+
+-- vim.keymap.set('n', '<leader>cll', function()
+--   local hop = require 'hop'
+--   local HintDirection = require('hop.hint').HintDirection
+--
+--   hop.hint_words {
+--     current_line_only = true,
+--     hint_direction = HintDirection.AFTER_CURSOR,
+--   }
+-- end, { desc = 'Hop on current line' })
+--
+
+vim.keymap.set('n', '<leader>cll', function()
+  require('hop').hint_char1 {
+    current_line_only = true,
+  }
+end, { desc = 'Hop to char in current line' })
+
+vim.keymap.set('n', '<leader>hb', function()
+  require('hop').hint_patterns {
+    pattern = vim.fn.input 'Pattern: ',
+  }
+end, { desc = 'Hop to char in buffer' })
+
+vim.keymap.set('n', '<leader>hcl', function()
+  local input = vim.fn.input 'Fuzzy (pattern): '
+  if input == '' then
+    return
+  end
+
+  -- Escape Lua pattern characters (basic fuzzy simulation)
+  local safe_pattern = input:gsub('([^%w])', '%%%1')
+
+  require('hop').hint_patterns {
+    current_line_only = true, -- ← restrict to current line
+    pattern = safe_pattern,
+  }
+end, { desc = 'Fuzzy-ish Hop in Current Line' })
+
+vim.keymap.set('n', '<leader>rf', require('custom.phpnav').open_php_related_file, {
+  desc = 'Jump to required/related file',
+})

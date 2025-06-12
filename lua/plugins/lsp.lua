@@ -102,26 +102,42 @@ return { -- LSP Configuration & Plugins
       end,
     })
 
-local nvim_lsp = require('lspconfig')
-nvim_lsp.html.setup({
-  capabilities = capabilities,  -- Add your capabilities setup if necessary
-  init_options = {
-    provideFormatter = false,  -- Disable LSP formatting for HTML files
-  },
-  on_attach = function(client, bufnr)
-    -- Disable LSP formatting specifically for HTML files
-    if vim.bo.filetype == 'html' or  vim.bo.filetype == 'php' then
-      client.server_capabilities.documentFormattingProvider = false
-    end
-  end,
-})
+    local nvim_lsp = require 'lspconfig'
+    nvim_lsp.html.setup {
+      capabilities = capabilities, -- Add your capabilities setup if necessary
+      init_options = {
+        provideFormatter = false, -- Disable LSP formatting for HTML files
+      },
+      on_attach = function(client, bufnr)
+        -- Disable LSP formatting specifically for HTML files
+        if vim.bo.filetype == 'html' or vim.bo.filetype == 'php' then
+          client.server_capabilities.documentFormattingProvider = false
+        end
+      end,
+    }
 
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
     -- Enable the following language servers
     local servers = {
-      html = { filetypes = { 'html', 'twig', 'hbs','php' } },
+      html = { filetypes = { 'html', 'twig', 'hbs', 'php' } },
+
+      phpactor = false,
+
+      intelephense = {
+        settings = {
+          intelephense = {
+            files = {
+              maxSize = 5000000, -- Allow larger files if needed
+            },
+            environment = {
+              includePaths = { './vendor' }, -- Optional, for PSR-4 paths
+            },
+          },
+        },
+      },
+
       lua_ls = {
         -- cmd = {...},
         -- filetypes { ...},
@@ -247,7 +263,17 @@ nvim_lsp.html.setup({
 
     -- You can add other tools here that you want Mason to install
     -- for you, so that they are available from within Neovim.
-    local ensure_installed = vim.tbl_keys(servers or {})
+    -- local ensure_installed = vim.tbl_keys(servers or {})
+    --
+
+    local ensure_installed = {}
+
+    for server_name, config in pairs(servers or {}) do
+      if config ~= false then
+        table.insert(ensure_installed, server_name)
+      end
+    end
+
     vim.list_extend(ensure_installed, {
       'stylua', -- Used to format lua code
     })
@@ -267,12 +293,5 @@ nvim_lsp.html.setup({
     }
   end,
 
-
--- lua/plugins/lsp.lua
-
-
-
-
-
-
+  -- lua/plugins/lsp.lua
 }

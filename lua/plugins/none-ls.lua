@@ -24,14 +24,38 @@ return {
       automatic_installation = true,
     }
 
+    -- local sources = {
+    --   diagnostics.checkmake,
+    --   formatting.prettier.with { filetypes = { 'json', 'yaml', 'markdown' } },
+    --   formatting.stylua,
+    --   formatting.shfmt.with { args = { '-i', '4' } },
+    --   formatting.terraform_fmt,
+    --   require('none-ls.formatting.ruff').with { extra_args = { '--extend-select', 'I' } },
+    --   require 'none-ls.formatting.ruff_format',
+    -- }
+
     local sources = {
       diagnostics.checkmake,
-      formatting.prettier.with { filetypes = { 'json', 'yaml', 'markdown' } },
-      formatting.stylua,
-      formatting.shfmt.with { args = { '-i', '4' } },
-      formatting.terraform_fmt,
-      require('none-ls.formatting.ruff').with { extra_args = { '--extend-select', 'I' } },
-      require 'none-ls.formatting.ruff_format',
+      formatting.prettier.with {
+        filetypes = { 'json', 'yaml', 'markdown' },
+      },
+      formatting.stylua.with {
+        filetypes = { 'lua' },
+      },
+      formatting.shfmt.with {
+        filetypes = { 'sh' },
+        args = { '-i', '4' },
+      },
+      formatting.terraform_fmt.with {
+        filetypes = { 'terraform', 'tf' },
+      },
+      require('none-ls.formatting.ruff').with {
+        filetypes = { 'python' },
+        extra_args = { '--extend-select', 'I' },
+      },
+      require('none-ls.formatting.ruff_format').with {
+        filetypes = { 'python' },
+      },
     }
 
     local augroup = vim.api.nvim_create_augroup('LspFormatting', {})

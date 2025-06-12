@@ -1,0 +1,22 @@
+diff --git a/init.lua b/init.lua
+index ef17e53..007fcc3 100644
+--- a/init.lua
++++ b/init.lua
+@@ -56,6 +56,8 @@ require('lazy').setup({
+   require 'plugins.notify',
+   require 'plugins.nui',
+   require 'plugins.bdelete',
++  require 'plugins.lazygit',
++  require 'plugins.flash',
+ }, {
+ 
+   ui = {
+@@ -214,8 +216,3 @@ vim.api.nvim_create_autocmd('FileType', {
+   callback = function()
+     vim.treesitter.language.register('c', 'c') -- safety net
+     vim.bo.indentexpr = ''                     -- disable Treesitter indenting
+-    vim.bo.autoindent = true
+-    vim.bo.smartindent = true
+-    vim.bo.cindent = true
+-  end,
+-})

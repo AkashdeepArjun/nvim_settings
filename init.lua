@@ -56,6 +56,10 @@ require('lazy').setup({
   require 'plugins.notify',
   require 'plugins.nui',
   require 'plugins.bdelete',
+  require 'plugins.lazygit',
+  require 'plugins.flash',
+  require 'plugins.hop',
+  require 'plugins.php_setup',
 }, {
 
   ui = {
@@ -177,7 +181,7 @@ vim.api.nvim_create_autocmd('BufWritePost', {
   callback = function(args)
     local file = args.file
     local name = vim.fn.fnamemodify(file, ':t') -- get just the filename
-    local size = vim.fn.getfsize(file)          -- get file size in bytes
+    local size = vim.fn.getfsize(file) -- get file size in bytes
 
     if size >= 0 then
       vim.notify(string.format('Wrote %s (%d bytes)', name, size), vim.log.levels.INFO, { title = 'File Saved' })
@@ -211,9 +215,11 @@ vim.api.nvim_create_autocmd('FileType', {
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'c',
+  -- disable Treesitter indenting
+
   callback = function()
     vim.treesitter.language.register('c', 'c') -- safety net
-    vim.bo.indentexpr = ''                     -- disable Treesitter indenting
+    vim.bo.indentexpr = '' -- disable Treesitter indenting
     vim.bo.autoindent = true
     vim.bo.smartindent = true
     vim.bo.cindent = true
