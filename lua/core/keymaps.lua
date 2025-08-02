@@ -1994,3 +1994,21 @@ vim.keymap.set('n', '<leader>rf', require('custom.phpnav').open_php_related_file
 
 -- Keymap
 vim.keymap.set('n', '<leader>z', '<cmd>ZenMode<CR>', { noremap = true, silent = true })
+
+vim.keymap.set('n', '<leader>bm', require('custom.telescope_marks').buffer_marks, { desc = 'Telescope: Buffer Marks' })
+
+-- -- Manual save session
+-- vim.keymap.set('n', '<leader>ss', function()
+--   require('auto-session').SaveSession()
+-- end, { desc = 'Save Session' })
+--
+-- -- Manual restore session
+-- vim.keymap.set('n', '<leader>sr', function()
+--   require('auto-session').RestoreSession()
+-- end, { desc = 'Restore Session' })
+
+-- Optional: Delete session
+vim.keymap.set('n', '<leader>sd', function()
+  require('auto-session').DeleteSession()
+end, { desc = 'Delete Session' })
+vim.keymap.set('n', '<leader>to', '<cmd>Telescope grapple tags<cr>')

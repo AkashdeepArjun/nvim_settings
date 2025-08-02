@@ -13,32 +13,19 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +11 lua/plugins/lualine.lua
-badd +349 LuaSnip/html.lua
-badd +28 LuaSnip/all.lua
-badd +26 lua/plugins/luasnip.lua
-badd +1 lua/plugins/fzf.lua
-badd +259 lua/plugins/lsp.lua
-badd +1 lua/plugins/mini_surround.lua
-badd +1 lua/plugins/misc.lua
-badd +1 lua/plugins/muren.lua
+badd +44 init.lua
+badd +14 lua/plugins/novice.lua
+badd +3 lua/plugins/hop.lua
+badd +1 key_info.txt
 badd +1 lua/plugins/nvim-planery.lua
-badd +26 lua/plugins/neo-tree.lua
-badd +35 lua/plugins/ccc.lua
-badd +12 lua/plugins/color-highlight.lua
-badd +1 lua/plugins/colortheme.lua
-badd +1 lua/plugins/indent-blankline.lua
-badd +14 test.html
-badd +182 init.lua
-badd +41 lua/core/options.lua
-badd +25 lua/plugins/treesitter.lua
-badd +14 lua/custom/php_toggle.lua
+badd +2 lua/plugins/php_setup.lua
 badd +1 health://
-badd +620 lua/core/keymaps.lua
-badd +1 lua/plugins/novice.lua
-badd +2 lua/plugins/notify.lua
-badd +9 lua/plugins/spectre.lua
-badd +1 test.css
+badd +1 lua/plugins/none-ls.lua
+badd +2011 lua/core/keymaps.lua
+badd +1 lua/plugins/telescope.lua
+badd +30 lua/plugins/grapple.lua
+badd +28 lua/custom/telescope_marks.lua
+badd +1 lua/plugins/auto_session.lua
 argglobal
 %argdel
 edit lua/core/keymaps.lua
@@ -59,11 +46,10 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 wincmd =
-tcd ~/.config/nvim
 argglobal
 enew
-file ~/.config/nvim/neo-tree\ filesystem\ \[1]
-balt ~/.config/nvim/test.html
+file neo-tree\ filesystem\ \[1]
+balt lua/custom/telescope_marks.lua
 setlocal foldmethod=manual
 setlocal foldexpr=0
 setlocal foldmarker={{{,}}}
@@ -72,6 +58,7 @@ setlocal foldlevel=0
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldenable
+lcd ~/.config/nvim
 wincmd w
 argglobal
 balt ~/.config/nvim/init.lua
@@ -85,12 +72,13 @@ setlocal foldnestmax=20
 setlocal foldenable
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 620 - ((16 * winheight(0) + 15) / 31)
+let s:l = 2011 - ((32 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 620
-normal! 014|
+keepjumps 2011
+normal! 0
+lcd ~/.config/nvim
 wincmd w
 2wincmd w
 wincmd =

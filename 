@@ -1,0 +1,16 @@
+[1mdiff --git a/lua/core/keymaps.lua b/lua/core/keymaps.lua[m
+[1mindex 06e11a4..8df5ad8 100644[m
+[1m--- a/lua/core/keymaps.lua[m
+[1m+++ b/lua/core/keymaps.lua[m
+[36m@@ -1994,3 +1994,11 @@[m [mvim.keymap.set('n', '<leader>rf', require('custom.phpnav').open_php_related_file[m
+ [m
+ -- Keymap[m
+ vim.keymap.set('n', '<leader>z', '<cmd>ZenMode<CR>', { noremap = true, silent = true })[m
+[32m+[m
+[32m+[m[32mlocal grapple = require 'grapple'[m
+[32m+[m
+[32m+[m[32mvim.keymap.set('n', '<leader>ma', grapple.tag, { desc = 'Add mark (Grapple)' })[m
+[32m+[m[32mvim.keymap.set('n', '<leader>mr', grapple.untag, { desc = 'Remove mark (Grapple)' })[m
+[32m+[m[32mvim.keymap.set('n', '<leader>ml', grapple.toggle_tags, { desc = 'Toggle Grapple UI' })[m
+[32m+[m[32mvim.keymap.set('n', '<leader>mj', grapple.cycle_forward, { desc = 'Next mark (Grapple)' })[m
+[32m+[m[32mvim.keymap.set('n', '<leader>mk', grapple.cycle_backward, { desc = 'Prev mark (Grapple)' })[m

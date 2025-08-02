@@ -23,7 +23,7 @@ return {
     local telescope = require 'telescope'
     local actions = require 'telescope.actions'
     local builtin = require 'telescope.builtin'
-    local action_Statre = require 'telescope.actions.state'
+    local action_state = require 'telescope.actions.state'
 
     require('telescope').setup {
       defaults = {
@@ -69,21 +69,33 @@ return {
       extensions = {
         ['ui-select'] = require('telescope.themes').get_dropdown {},
         grapple = {
+          entry_maker = function(tag)
+            return {
+              value = tag,
+              display = tag.path,
+              ordinal = tag.path,
+              path = tag.path,
+              line = tag.line,
+              col = tag.col,
+            }
+          end,
           mappings = {
             default = function(prompt_bufnr)
               actions.close(prompt_bufnr)
               local entry = action_state.get_selected_entry()
-              vim.cmd('edit ' .. entry.path)
+              require('grapple').open_tag(entry.value) -- IMPORTANT: use .value here
             end,
             ['<M-v>'] = function(prompt_bufnr)
               actions.close(prompt_bufnr)
               local entry = action_state.get_selected_entry()
               vim.cmd('vsplit ' .. entry.path)
+              vim.api.nvim_win_set_cursor(0, { entry.line or 1, (entry.col or 1) - 1 })
             end,
             ['<M-s>'] = function(prompt_bufnr)
               actions.close(prompt_bufnr)
               local entry = action_state.get_selected_entry()
               vim.cmd('split ' .. entry.path)
+              vim.api.nvim_win_set_cursor(0, { entry.line or 1, (entry.col or 1) - 1 })
             end,
           },
         },
