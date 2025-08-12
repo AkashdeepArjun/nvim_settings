@@ -2012,3 +2012,5 @@ vim.keymap.set('n', '<leader>sd', function()
   require('auto-session').DeleteSession()
 end, { desc = 'Delete Session' })
 vim.keymap.set('n', '<leader>to', '<cmd>Telescope grapple tags<cr>')
+
+vim.keymap.set('n', '<leader>r', 'R', { noremap = true })
